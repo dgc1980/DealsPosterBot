@@ -7,7 +7,7 @@ This bot has been built as requested by u/DealsPoster on reddit
 version: '2.3'
 services:
   DealsPoster:
-    image: dgc1980/dealsposter:latest
+    image: dgc1980/dealsposterbot:latest
     environment:
       REDDIT_USER: YOUR_REDDIT_BOT_USERNAMR
       REDDIT_PASS: YOUR_REDDIT_BOT_PASS
