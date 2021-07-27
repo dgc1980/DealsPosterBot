@@ -48,7 +48,6 @@ subreddit = reddit.subreddit(reddit_subreddit)
 
 
 apppath='/app/config/'
-apppath = './config/'
 
 if not os.path.isfile(apppath+"dealsposter.db"):
     con = sqlite3.connect(apppath+"dealsposter.db")
@@ -153,7 +152,6 @@ def check_message(msg):
             ismod= False
             for moderator in subreddit.moderator():
                 if moderator.name == msg.submission.author.name:
-                  logging.info('user is moderator')
                   ismod = True
             if msg.author.name == msg.submission.author.name or ismod and EXPIRED_SCHEDULE_TYPE.lower() == 'submitter':
                  setsched = True
