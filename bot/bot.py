@@ -33,7 +33,7 @@ POST_REPLY = os.environ['POST_REPLY']
 
 
 
-post_footer = "\n\n[^(I am a bot.)](https://github.com/dgc1980/DealsPoster) ^(this action was performed automatically.)"
+post_footer = "\n\n[^(I am a bot.)](https://github.com/dgc1980/DealsPosterBot) ^(this action was performed automatically.)"
 
 web_useragent = 'python:DealPosterBot (by dgc1980)'
 
