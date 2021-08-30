@@ -113,6 +113,15 @@ def check_post(post):
            if not donotprocess:
                comment = post.reply(POST_REPLY + post_footer)
                comment.mod.distinguish(sticky=True)
+
+               tm = dateparser.parse( "in 30 days", settings={'PREFER_DATES_FROM': 'future', 'TIMEZONE': 'UTC', 'TO_TIMEZONE': 'UTC'} )
+               tm2 = time.mktime( tm.timetuple() )
+
+               cursorObj = con.cursor()
+               cursorObj.execute('INSERT into schedules(postid, schedtime) values(?,?)',(msg.submission.id,tm2) )
+               con.commit()
+               con.close()
+
                submissionID(post.id)
                return
 
@@ -199,29 +208,14 @@ def check_message(msg):
             msg.mark_read()
             logging.info("already expired... responded to: " + msg.author.name)
         else:
-            con = sqlite3.connect(apppath+'dealsposter.db', timeout=20)
-            cursorObj = con.cursor()
-            cursorObj.execute('SELECT * FROM expirecounter WHERE postid = "'+msg.submission.id+'"')
-            rows = cursorObj.fetchall()
-            if len(rows) > 0:
-                if rows[0][2] == 2:
-                    new_flair = "Expired:"
-                    try:
-                        new_flair = "Expired: " + msg.submission.link_flair_text
-                    except:
-                        pass
-                    msg.submission.mod.flair(text=new_flair)
-                    myreply = msg.reply("Thank you for your report, this submission has been automatically expired.").mod.distinguish(how='yes')
-                else:
-                    cursorObj.execute('UPDATE expirecounter SET counter = 2 WHERE postid = "'+msg.submission.id+'"')
-                    con.commit()
-                    myreply = msg.reply("Thank you for your report, the moderators have been notified.").mod.distinguish(how='yes')
-            else:
-                cursorObj.execute('INSERT into expirecounter(postid,counter) VALUES(?,?)',(msg.submission.id,1))
-                con.commit()
-                myreply = msg.reply("Thank you u/" + msg.author.name + "for your report, the moderators have been notified.").mod.distinguish(how='yes')
-                msg.report('expiry request issued.')
-            con.close()
+            new_flair = "Expired:"
+            try:
+              new_flair = "Expired: " + msg.submission.link_flair_text
+            except:
+              pass
+            msg.submission.mod.flair(text=new_flair)
+            msg.submission.mod.spoiler()
+            myreply = msg.reply("Thank you for your report, this submission has been automatically expired.").mod.distinguish(how='yes')
             msg.mark_read()
 
 def run_schedule():
@@ -252,6 +246,7 @@ def run_schedule():
                 submission.mod.flair(text=new_flair)
         except:
           submission.mod.flair(text=new_flair)
+          msg.submission.mod.spoiler()
         cursorObj.execute('DELETE FROM schedules WHERE postid = "'+ row[1]+'"')
         con.commit()
   con.close();
