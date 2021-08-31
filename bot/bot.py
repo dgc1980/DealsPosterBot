@@ -200,7 +200,7 @@ def check_message(msg):
             con.commit()
             con.close()
             logging.info("setting up schedule: " + msg.author.name + "for https://redd.it/" + msg.submission.id + " at " + str(tm.strftime('%Y-%m-%d %H:%M:%S'))  )
-            myreply = msg.reply("This deal has been scheduled to expire as requested by /u/"+msg.author.name+". at " + str(tm.strftime('%Y-%m-%d %H:%M:%S')) + " UTC").mod.distinguish(how='yes')
+            myreply = msg.reply("This deal has been scheduled to expire as requested by /u/"+msg.author.name+". at " + str(tm.strftime('%Y-%m-%d %H:%M:%S')) + " UTC" + post_footer).mod.distinguish(how='yes')
             msg.mark_read()
         else:
             match1 = re.search("set expiry\ ([\w\:\ \-\+]+)", text)
@@ -212,7 +212,7 @@ def check_message(msg):
             con.commit()
             con.close()
             logging.info("setting up schedule: " + msg.author.name + "for https://redd.it/" + msg.submission.id + " at " + str(tm.strftime('%Y-%m-%d %H:%M:%S'))  )
-            myreply = msg.reply("This deal has been scheduled to expire as requested by /u/"+msg.author.name+". at " + str(tm.strftime('%Y-%m-%d %H:%M:%S')) + " UTC").mod.distinguish(how='yes')
+            myreply = msg.reply("This deal has been scheduled to expire as requested by /u/"+msg.author.name+". at " + str(tm.strftime('%Y-%m-%d %H:%M:%S')) + " UTC" + post_footer).mod.distinguish(how='yes')
             msg.mark_read()
     elif available:
         if msg.submission.link_flair_text is not None and "expired:" in msg.submission.link_flair_text.lower():
