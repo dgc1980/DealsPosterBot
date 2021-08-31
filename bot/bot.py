@@ -29,6 +29,9 @@ EXPIRED_SCHEDULE = os.environ['EXPIRED_SCHEDULE']
 EXPIRED_SCHEDULE_TYPE = os.environ['EXPIRED_SCHEDULE_TYPE']
 
 
+DB_FILE = os.environ['DB_FILE']
+
+
 POST_REPLY = os.environ['POST_REPLY']
 
 
@@ -54,12 +57,14 @@ apppath='/app/config/'
 #apppath='./'
 
 
-if not os.path.isfile(apppath+"dealsposter.db"):
-    con = sqlite3.connect(apppath+"dealsposter.db")
+if not os.path.isfile(apppath+DB_FILE):
+    con = sqlite3.connect(apppath+DB_FILE)
     cursorObj = con.cursor()
     cursorObj.execute("CREATE TABLE IF NOT EXISTS schedules(id integer PRIMARY KEY, postid text, schedtime integer)")
     con.commit()
     cursorObj.execute("CREATE TABLE IF NOT EXISTS expirecounter(id integer PRIMARY KEY, postid text, counter integer)")
+    con.commit()
+    cursorObj.execute("CREATE TABLE IF NOT EXISTS originalflair(id integer PRIMARY KEY, postid text, css text)")
     con.commit()
 
 
@@ -191,11 +196,12 @@ def check_message(msg):
 ####
     if setsched:
         if re.search("(\d{1,2}:\d{2} \d{2}\/\d{2}\/\d{4})", text) is not None:
-            con = sqlite3.connect(apppath+'dealsposter.db', timeout=20)
+            con = sqlite3.connect(apppath+DB_FILE, timeout=20)
             match1 = re.search("(\d{1,2}:\d{2} \d{2}\/\d{2}\/\d{4})", text)
             tm = datetime.datetime.strptime(match1.group(1), "%H:%M %d/%m/%Y")
             tm2 = time.mktime(tm.timetuple())
             cursorObj = con.cursor()
+            cursorObj.execute('DELETE from schedules WHERE postid = ' + msg.submission.id)
             cursorObj.execute('INSERT into schedules(postid, schedtime) values(?,?)',(msg.submission.id,tm2) )
             con.commit()
             con.close()
@@ -206,8 +212,9 @@ def check_message(msg):
             match1 = re.search("set expiry\ ([\w\:\ \-\+]+)", text)
             tm = dateparser.parse( match1.group(1), settings={'PREFER_DATES_FROM': 'future', 'TIMEZONE': 'UTC', 'TO_TIMEZONE': 'UTC'} )
             tm2 = time.mktime( tm.timetuple() )
-            con = sqlite3.connect(apppath+'dealsposter.db', timeout=20)
+            con = sqlite3.connect(apppath+DB_FILE, timeout=20)
             cursorObj = con.cursor()
+            cursorObj.execute('DELETE from schedules WHERE postid = ' + msg.submission.id)
             cursorObj.execute('INSERT into schedules(postid, schedtime) values(?,?)',(msg.submission.id,tm2) )
             con.commit()
             con.close()
@@ -221,12 +228,20 @@ def check_message(msg):
               new_flair = msg.submission.link_flair_text.replace("Expired: ","")
             except:
               pass
+            con = sqlite3.connect(apppath+DB_FILE, timeout=20)
+            cursorObj = con.cursor()
+            cursorObj.execute('SELECT * FROM originalflair WHERE postid = "'+msg.submission.id+'"')
+            rows = cursorObj.fetchall()
+            css_class = ""
+            if len(rows) != 0:
+              css_class = rows[0][2]
             if new_flair == "" or new_flair == "Expired:":
-              msg.submission.mod.flair('','')
+              msg.submission.mod.flair(text='',css_class=css_class)
             else:
-              msg.submission.mod.flair(text=new_flair)
+              msg.submission.mod.flair(text=new_flair,css_class=css_class)
             msg.submission.mod.unspoiler()
             myreply = msg.reply("Deal is available again.\n\nIf this deal has expired or sold out, you can reply to this comment with `expired`.").mod.distinguish(how='yes')
+
             msg.mark_read()
 
         else:
@@ -244,14 +259,22 @@ def check_message(msg):
               new_flair = "Expired: " + msg.submission.link_flair_text
             except:
               pass
-            msg.submission.mod.flair(text=new_flair)
+
+            con = sqlite3.connect(apppath+DB_FILE, timeout=20)
+            cursorObj = con.cursor()
+            cursorObj.execute('DELETE FROM originalflair WHERE postid = "'+msg.submission.id+'"')
+            cursorObj.execute('INSERT into originalflair (postid, css) VALUES(?,?)', (msg.submission.id,msg.submission.link_flair_css_class))
+            con.commit()
+            con.close()
+            msg.submission.mod.flair(text=new_flair,css_class="expired")
             msg.submission.mod.spoiler()
+
             myreply = msg.reply("Deal has been marked expired.\n\nIf this was a mistake, please reply with `available`.").mod.distinguish(how='yes')
             msg.mark_read()
 
 def run_schedule():
   tm = str(int(time.time()))
-  con = sqlite3.connect(apppath+'dealsposter.db')
+  con = sqlite3.connect(apppath+DB_FILE)
   cursorObj = con.cursor()
   cursorObj.execute('SELECT * FROM schedules WHERE schedtime <= ' + tm + ';')
   rows = cursorObj.fetchall()
@@ -276,8 +299,17 @@ def run_schedule():
             else:
                 submission.mod.flair(text=new_flair)
         except:
+
+          con = sqlite3.connect(apppath+DB_FILE, timeout=20)
+          cursorObj = con.cursor()
+          cursorObj.execute('DELETE FROM originalflair WHERE postid = "'+msg.submission.id+'"')
+          cursorObj.execute('INSERT into originalflair (postid, css) VALUES(?,?)', (submission.id,submission.link_flair_css_class))
+          con.commit()
+          con.close()
+
           submission.mod.flair(text=new_flair)
-          msg.submission.mod.spoiler()
+          submission.mod.spoiler()
+
         cursorObj.execute('DELETE FROM schedules WHERE postid = "'+ row[1]+'"')
         con.commit()
   con.close();
