@@ -270,7 +270,7 @@ def check_message(msg):
             msg.submission.mod.flair(text=new_flair,css_class="expired")
             msg.submission.mod.spoiler()
 
-            myreply = msg.reply("Deal has been marked expired.\n\nIf this was a mistake, please reply with `available`." + post_footer).mod.distinguish(how='yes')
+            myreply = msg.reply("Deal has been marked expired.\n\nIf this deal has been mistakenly closed or has been restocked, please reply with `available`." + post_footer).mod.distinguish(how='yes')
             msg.mark_read()
 
 def run_schedule():
