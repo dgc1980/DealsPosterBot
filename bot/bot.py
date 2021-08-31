@@ -226,7 +226,7 @@ def check_message(msg):
             else:
               msg.submission.mod.flair(text=new_flair)
             msg.submission.mod.unspoiler()
-            myreply = msg.reply("Thank you for your report, this submission has been marked as available again.").mod.distinguish(how='yes')
+            myreply = msg.reply("Deal is available again.\n\nIf this deal has expired or sold out, you can reply to this comment with `expired`.").mod.distinguish(how='yes')
             msg.mark_read()
 
         else:
@@ -246,7 +246,7 @@ def check_message(msg):
               pass
             msg.submission.mod.flair(text=new_flair)
             msg.submission.mod.spoiler()
-            myreply = msg.reply("Thank you for your report, this submission has been automatically expired.").mod.distinguish(how='yes')
+            myreply = msg.reply("Deal has been marked expired.\n\nIf this was a mistake, please reply with `available`.").mod.distinguish(how='yes')
             msg.mark_read()
 
 def run_schedule():
