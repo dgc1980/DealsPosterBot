@@ -127,6 +127,7 @@ def check_post(post):
                tm = dateparser.parse( "in 30 days", settings={'PREFER_DATES_FROM': 'future', 'TIMEZONE': 'UTC', 'TO_TIMEZONE': 'UTC'} )
                tm2 = time.mktime( tm.timetuple() )
 
+               con = sqlite3.connect(apppath+DB_FILE, timeout=20)
                cursorObj = con.cursor()
                cursorObj.execute('INSERT into schedules(postid, schedtime) values(?,?)',(msg.submission.id,tm2) )
                con.commit()
