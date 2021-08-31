@@ -129,7 +129,7 @@ def check_post(post):
 
                con = sqlite3.connect(apppath+DB_FILE, timeout=20)
                cursorObj = con.cursor()
-               cursorObj.execute('INSERT into schedules(postid, schedtime) values(?,?)',(msg.submission.id,tm2) )
+               cursorObj.execute('INSERT into schedules(postid, schedtime) values(?,?)',(post.id,tm2) )
                con.commit()
                con.close()
 
