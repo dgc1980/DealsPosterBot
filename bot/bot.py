@@ -297,18 +297,17 @@ def run_schedule():
             if "expired:" in old_flair:
                 logging.info("this submission has already been marked expired")
             else:
+                con = sqlite3.connect(apppath+DB_FILE, timeout=20)
+                cursorObj = con.cursor()
+                cursorObj.execute('DELETE FROM originalflair WHERE postid = "'+msg.submission.id+'"')
+                cursorObj.execute('INSERT into originalflair (postid, css) VALUES(?,?)', (submission.id,submission.link_flair_css_class))
+                con.commit()
+                con.close()
                 submission.mod.flair(text=new_flair)
+                submission.mod.spoiler()
         except:
 
-          con = sqlite3.connect(apppath+DB_FILE, timeout=20)
-          cursorObj = con.cursor()
-          cursorObj.execute('DELETE FROM originalflair WHERE postid = "'+msg.submission.id+'"')
-          cursorObj.execute('INSERT into originalflair (postid, css) VALUES(?,?)', (submission.id,submission.link_flair_css_class))
-          con.commit()
-          con.close()
-
-          submission.mod.flair(text=new_flair)
-          submission.mod.spoiler()
+          submission.mod.flair(text=new_flair,css_class="expired")
 
         cursorObj.execute('DELETE FROM schedules WHERE postid = "'+ row[1]+'"')
         con.commit()
