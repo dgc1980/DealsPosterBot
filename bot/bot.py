@@ -271,7 +271,7 @@ def run_schedule():
         except:
             pass
         try:
-            if old_flair.index("expired:") > -1:
+            if "expired:" in old_flair:
                 logging.info("this submission has already been marked expired")
             else:
                 submission.mod.flair(text=new_flair)
