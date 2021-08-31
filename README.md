@@ -4,7 +4,7 @@ This bot has been built as requested by u/DealsPoster on reddit
 
 `docker-compose.yml`
 ```
-version: '2.3'
+version: '2.0'
 services:
   DealsPoster:
     image: dgc1980/dealsposterbot:latest
@@ -14,6 +14,7 @@ services:
       REDDIT_CID: YOURCLIENTID
       REDDIT_SECRET: YOURSECRET
       REDDIT_SUBREDDIT: SubReddit
+      AVAILABLE_TRIGGER: "available"
       EXPIRED_TRIGGER: "expired"
       EXPIRED_SCHEDULE: "set expiry"
       ## "mods" for mods only, "submitter" for submitter and mods, or "anyone" to allow anyone to set expiry(can be abused)
