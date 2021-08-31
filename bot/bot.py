@@ -293,6 +293,7 @@ def run_schedule():
             old_flair = submission.link_flair_text.lower()
         except:
             pass
+
         try:
             if "expired:" in old_flair:
                 logging.info("this submission has already been marked expired")
@@ -305,9 +306,11 @@ def run_schedule():
                 con.close()
                 submission.mod.flair(text=new_flair)
                 submission.mod.spoiler()
+                print("a")
+                exit()
         except:
-
           submission.mod.flair(text=new_flair,css_class="expired")
+          submission.mod.spoiler()
 
         cursorObj.execute('DELETE FROM schedules WHERE postid = "'+ row[1]+'"')
         con.commit()
