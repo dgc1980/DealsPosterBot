@@ -24,6 +24,7 @@ reddit_pass = os.environ['REDDIT_PASS']
 reddit_subreddit = os.environ['REDDIT_SUBREDDIT']
 
 EXPIRED_TRIGGER = os.environ['EXPIRED_TRIGGER']
+AVAILABLE_TRIGGER = os.environ['AVAILABLE_TRIGGER']
 EXPIRED_SCHEDULE = os.environ['EXPIRED_SCHEDULE']
 EXPIRED_SCHEDULE_TYPE = os.environ['EXPIRED_SCHEDULE_TYPE']
 
@@ -33,7 +34,7 @@ POST_REPLY = os.environ['POST_REPLY']
 
 
 
-post_footer = "\n\n[^(I am a bot.)](https://github.com/dgc1980/DealsPosterBot) ^(this action was performed automatically.)"
+post_footer = "\n\n^(**Note:** I am a bot. this action was performed automatically. Intentional abuse will likely result in a ban.)"
 
 web_useragent = 'python:DealPosterBot (by dgc1980)'
 
@@ -48,6 +49,10 @@ subreddit = reddit.subreddit(reddit_subreddit)
 
 
 apppath='/app/config/'
+
+### for my local testing.
+#apppath='./'
+
 
 if not os.path.isfile(apppath+"dealsposter.db"):
     con = sqlite3.connect(apppath+"dealsposter.db")
@@ -127,6 +132,7 @@ def check_post(post):
 
 def check_message(msg):
     expired = False
+    available = False
     setsched = False
     responded = 0
     try:
@@ -154,6 +160,12 @@ def check_message(msg):
             try:
                 if text.index(EXPIRED_TRIGGER.lower()) > -1:
                     expired = True
+            except ValueError:
+                pass
+
+            try:
+                if text.index(AVAILABLE_TRIGGER.lower()) > -1:
+                    available = True
             except ValueError:
                 pass
     try:
@@ -202,9 +214,28 @@ def check_message(msg):
             logging.info("setting up schedule: " + msg.author.name + "for https://redd.it/" + msg.submission.id + " at " + str(tm.strftime('%Y-%m-%d %H:%M:%S'))  )
             myreply = msg.reply("This deal has been scheduled to expire as requested by /u/"+msg.author.name+". at " + str(tm.strftime('%Y-%m-%d %H:%M:%S')) + " UTC").mod.distinguish(how='yes')
             msg.mark_read()
+    elif available:
+        if msg.submission.link_flair_text is not None and "expired:" in msg.submission.link_flair_text.lower():
+            new_flair = ""
+            try:
+              new_flair = msg.submission.link_flair_text.replace("Expired: ","")
+            except:
+              pass
+            if new_flair == "" or new_flair == "Expired:":
+              msg.submission.mod.flair('','')
+            else:
+              msg.submission.mod.flair(text=new_flair)
+            msg.submission.mod.unspoiler()
+            myreply = msg.reply("Thank you for your report, this submission has been marked as available again.").mod.distinguish(how='yes')
+            msg.mark_read()
+
+        else:
+            myreply = msg.reply("This deal is already been marked as avilable.  We use flairs and spoilers to distinguish deals that are expired.").mod.distinguish(how='yes')
+            msg.mark_read()
+            logging.info("already expired... responded to: " + msg.author.name)
     elif expired:
-        if msg.submission.link_flair_text is not None and "expired: " in msg.submission.link_flair_text.lower():
-            myreply = msg.reply("This deal has already been marked expired.  We use flairs to distinguish deals that are expired.").mod.distinguish(how='yes')
+        if msg.submission.link_flair_text is not None and "expired:" in msg.submission.link_flair_text.lower():
+            myreply = msg.reply("This deal has already been marked expired.  We use flairs and spoilers to distinguish deals that are expired.").mod.distinguish(how='yes')
             msg.mark_read()
             logging.info("already expired... responded to: " + msg.author.name)
         else:
