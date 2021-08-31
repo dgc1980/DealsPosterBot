@@ -241,17 +241,17 @@ def check_message(msg):
             else:
               msg.submission.mod.flair(text=new_flair,css_class=css_class)
             msg.submission.mod.unspoiler()
-            myreply = msg.reply("Deal is available again.\n\nIf this deal has expired or sold out, you can reply to this comment with `expired`.").mod.distinguish(how='yes')
+            myreply = msg.reply("Deal is available again.\n\nIf this deal has expired or sold out, you can reply to this comment with `expired`." + post_footer).mod.distinguish(how='yes')
 
             msg.mark_read()
 
         else:
-            myreply = msg.reply("This deal is already been marked as avilable.  We use flairs and spoilers to distinguish deals that are expired.").mod.distinguish(how='yes')
+            myreply = msg.reply("This deal is already been marked as avilable.  We use flairs and spoilers to distinguish deals that are expired." + post_footer).mod.distinguish(how='yes')
             msg.mark_read()
             logging.info("already expired... responded to: " + msg.author.name)
     elif expired:
         if msg.submission.link_flair_text is not None and "expired:" in msg.submission.link_flair_text.lower():
-            myreply = msg.reply("This deal has already been marked expired.  We use flairs and spoilers to distinguish deals that are expired.").mod.distinguish(how='yes')
+            myreply = msg.reply("This deal has already been marked expired.  We use flairs and spoilers to distinguish deals that are expired." + post_footer).mod.distinguish(how='yes')
             msg.mark_read()
             logging.info("already expired... responded to: " + msg.author.name)
         else:
@@ -270,7 +270,7 @@ def check_message(msg):
             msg.submission.mod.flair(text=new_flair,css_class="expired")
             msg.submission.mod.spoiler()
 
-            myreply = msg.reply("Deal has been marked expired.\n\nIf this was a mistake, please reply with `available`.").mod.distinguish(how='yes')
+            myreply = msg.reply("Deal has been marked expired.\n\nIf this was a mistake, please reply with `available`." + post_footer).mod.distinguish(how='yes')
             msg.mark_read()
 
 def run_schedule():
