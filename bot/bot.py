@@ -306,8 +306,6 @@ def run_schedule():
                 con.close()
                 submission.mod.flair(text=new_flair)
                 submission.mod.spoiler()
-                print("a")
-                exit()
         except:
           submission.mod.flair(text=new_flair,css_class="expired")
           submission.mod.spoiler()
