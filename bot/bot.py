@@ -195,6 +195,8 @@ def check_message(msg):
         expired = False
         logging.info("abuse https://redd.id/" + msg.submission.id + " by: "+msg.author.name)
         msg.mark_read()
+    else:
+        msg.mark_read()
 ####
     if setsched:
         if re.search("(\d{1,2}:\d{2} \d{2}\/\d{2}\/\d{4})", text) is not None:
