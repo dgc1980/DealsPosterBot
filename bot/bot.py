@@ -108,7 +108,7 @@ def messageID(postid):
 def check_post(post):
    if post.created < int(time.time()) - 86400:
        return
-   if post.title[0:1].lower() == "[" or post.title[0:1].lower() == "[":
+   if post.title[0:1].lower() == "[" or post.title[0:1].lower() == "[" or 1 == 1:
        if post.id in open(apppath+'submissionids.txt').read():
            return
        donotprocess=False
@@ -343,8 +343,10 @@ while True:
     logging.info("Error connecting to reddit servers. Retrying in 30 seconds...")
     time.sleep(30)
   except (praw.exceptions.RedditAPIException):
-    logging.info("API error. Retrying in 180 seconds...")
-    time.sleep(180)
-
+    logging.info("API error. Retrying in 60 seconds...")
+    time.sleep(60)
+  except:
+    logging.info("Error connecting to reddit servers. Retrying in 30 seconds...")
+    time.sleep(30)
 
 
