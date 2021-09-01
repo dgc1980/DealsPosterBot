@@ -160,6 +160,7 @@ def check_message(msg):
 
 
     if responded == 0:
+            text = ""
             if isinstance(msg, praw.models.Comment):
                 text = msg.body.lower()
                 u = msg.author
