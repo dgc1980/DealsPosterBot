@@ -342,6 +342,9 @@ while True:
   except (prawcore.exceptions.RequestException, prawcore.exceptions.ResponseException):
     logging.info("Error connecting to reddit servers. Retrying in 30 seconds...")
     time.sleep(30)
+  except (praw.exceptions.RedditAPIException):
+    logging.info("Error connecting to reddit servers. Retrying in 30 seconds...")
+    time.sleep(180)
 
 
 
