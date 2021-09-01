@@ -343,7 +343,7 @@ while True:
     logging.info("Error connecting to reddit servers. Retrying in 30 seconds...")
     time.sleep(30)
   except (praw.exceptions.RedditAPIException):
-    logging.info("Error connecting to reddit servers. Retrying in 30 seconds...")
+    logging.info("API error. Retrying in 180 seconds...")
     time.sleep(180)
 
 
