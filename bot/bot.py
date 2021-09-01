@@ -190,7 +190,7 @@ def check_message(msg):
     except:
         pass
 #### Error checking to make sure people are not calling the bot via "u/BOTNAME EXPIRED" to trigger the bot and make it crash
-    if msg.submission.subreddit != subreddit:
+    if isinstance(msg, praw.models.Comment) and msg.submission.subreddit != subreddit:
         setsched = False
         expired = False
         logging.info("abuse https://redd.id/" + msg.submission.id + " by: "+msg.author.name)
