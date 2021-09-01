@@ -273,7 +273,8 @@ def check_message(msg):
 
             myreply = msg.reply("Deal has been marked expired.\n\nIf this deal has been mistakenly closed or has been restocked, please reply with `available`." + post_footer).mod.distinguish(how='yes')
             msg.mark_read()
-  messageID(msg.id)
+    messageID(msg.id)
+
 
 def run_schedule():
   tm = str(int(time.time()))
