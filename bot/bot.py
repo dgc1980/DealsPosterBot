@@ -203,7 +203,7 @@ def check_message(msg):
             tm = datetime.datetime.strptime(match1.group(1), "%H:%M %d/%m/%Y")
             tm2 = time.mktime(tm.timetuple())
             cursorObj = con.cursor()
-            cursorObj.execute('DELETE from schedules WHERE postid = ' + msg.submission.id)
+            cursorObj.execute('DELETE from schedules WHERE postid = :' + msg.submission.id + '"')
             cursorObj.execute('INSERT into schedules(postid, schedtime) values(?,?)',(msg.submission.id,tm2) )
             con.commit()
             con.close()
@@ -216,7 +216,7 @@ def check_message(msg):
             tm2 = time.mktime( tm.timetuple() )
             con = sqlite3.connect(apppath+DB_FILE, timeout=20)
             cursorObj = con.cursor()
-            cursorObj.execute('DELETE from schedules WHERE postid = ' + msg.submission.id)
+            cursorObj.execute('DELETE from schedules WHERE postid = "' + msg.submission.id + '"')
             cursorObj.execute('INSERT into schedules(postid, schedtime) values(?,?)',(msg.submission.id,tm2) )
             con.commit()
             con.close()
@@ -232,7 +232,7 @@ def check_message(msg):
               pass
             con = sqlite3.connect(apppath+DB_FILE, timeout=20)
             cursorObj = con.cursor()
-            cursorObj.execute('SELECT * FROM originalflair WHERE postid = "'+msg.submission.id+'"')
+            cursorObj.execute('DELETE from schedules WHERE postid = :' + msg.submission.id + '"')
             rows = cursorObj.fetchall()
             css_class = ""
             if len(rows) != 0:
@@ -345,8 +345,8 @@ while True:
   except (praw.exceptions.RedditAPIException):
     logging.info("API error. Retrying in 60 seconds...")
     time.sleep(60)
-  except:
-    logging.info("Error connecting to reddit servers. Retrying in 30 seconds...")
-    time.sleep(30)
+#  except:
+#    logging.info("Error connecting to reddit servers. Retrying in 30 seconds...")
+#    time.sleep(30)
 
 
