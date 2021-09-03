@@ -284,7 +284,12 @@ def run_schedule():
   rows = cursorObj.fetchall()
   if len(rows) > 0:
     for row in rows:
-      if reddit.submission(row[1]).removed_by_category != "None":
+      cat = "None"
+      try:
+        cat = reddit.submission(row[1]).removed_by_category
+      except:
+        cat = "None"
+      if cat != "None":
         logging.info("running schedule on https://reddit.com/" + row[1])
         new_flair = "Expired:"
         submission = reddit.submission(row[1])
