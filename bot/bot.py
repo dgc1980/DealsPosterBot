@@ -280,7 +280,7 @@ def run_schedule():
   tm = str(int(time.time()))
   con = sqlite3.connect(apppath+DB_FILE)
   cursorObj = con.cursor()
-  cursorObj.execute('SELECT * FROM schedules WHERE schedtime <= ' + tm + ';')
+  cursorObj.execute('SELECT * FROM schedules WHERE schedtime <= ' + tm + ' LIMIT 0,5;')
   rows = cursorObj.fetchall()
   if len(rows) > 0:
     for row in rows:
